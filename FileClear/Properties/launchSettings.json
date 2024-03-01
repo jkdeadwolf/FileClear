@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "FileClear": {
+      "commandName": "Project",
+      "commandLineArgs": " E:\\LogBackup\\外网日志备份(勿删) ",
+      "nativeDebugging": true
+    }
+  }
+}

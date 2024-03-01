@@ -1,5 +1,5 @@
 ﻿string usage = """
-    fileclear path [-t days] [-d destpath] 
+    fileclear path [destpath] [-t days] 
     """;
 
 ClearJob? job = GetJob();
@@ -13,6 +13,7 @@ if (string.IsNullOrEmpty(job.DestPath) == false)
         FileInfo fileInfo = new FileInfo(file);
         if (fileInfo.LastWriteTime.Add(job.TimeSpan) < now)
         {
+            Console.WriteLine($"MOVE {file}");
             File.Move(file, job.DestPath);
         }
     }
@@ -24,6 +25,7 @@ else
         FileInfo fileInfo = new FileInfo(file);
         if (fileInfo.LastWriteTime.Add(job.TimeSpan) < now)
         {
+            Console.WriteLine($"DELETE {file}");
             File.Delete(file);
         }
     }
@@ -38,8 +40,29 @@ ClearJob? GetJob()
         return null;
     }
     ClearJob clearJob = new ClearJob();
-    clearJob.Path = args[1];
-    clearJob.TimeSpan = new TimeSpan(365, 0, 0, 0);
+    
+    clearJob.Path = args[0];
+    if (args.Length == 2)
+        clearJob.DestPath = args[1];
+    else if (args.Length == 3)
+    {
+        if (args[1] == "-t")
+            clearJob.TimeSpan = new TimeSpan(int.Parse(args[2]), 0, 0, 0);
+    }
+    else if (args.Length == 4)
+    {
+        clearJob.DestPath = args[1];
+        clearJob.TimeSpan = new TimeSpan(int.Parse(args[3]), 0, 0, 0);
+    }
+    else if (args.Length != 1)
+    {
+        Console.WriteLine(usage);
+        Console.WriteLine(string.Join(" ", args));
+        return null;
+    }
+
+    if (clearJob.TimeSpan == TimeSpan.Zero)
+        clearJob.TimeSpan = new TimeSpan(365, 0, 0, 0);
     clearJob.DestPath ="";
     return clearJob;
 }
@@ -49,7 +72,7 @@ class ClearJob
 
     public string Path { get; set; }
 
-    public TimeSpan TimeSpan { get; set; }
+    public TimeSpan TimeSpan { get; set; } = TimeSpan.Zero;
 
     public string DestPath { get; set; }
 }
