@@ -14,7 +14,14 @@ if (string.IsNullOrEmpty(job.DestPath) == false)
         if (fileInfo.LastWriteTime.Add(job.TimeSpan) < now)
         {
             Console.WriteLine($"MOVE {file}");
-            File.Move(file, job.DestPath);
+            try
+            {
+                File.Move(file, job.DestPath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"MOVE {file} Exception:{ex.Message}");
+            }
         }
     }
 }
@@ -26,7 +33,14 @@ else
         if (fileInfo.LastWriteTime.Add(job.TimeSpan) < now)
         {
             Console.WriteLine($"DELETE {file}");
-            File.Delete(file);
+            try
+            {
+                File.Delete(file);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DELETE {file} Exception:{ex.Message}");
+            }
         }
     }
 }
